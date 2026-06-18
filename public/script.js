@@ -1,74 +1,74 @@
+// ── Prime logic (runs entirely in the browser) ────────────────────────────────
+
+function parseInput(raw) {
+  const str = String(raw).trim();
+  if (str === '') return { error: 'Please enter a number.' };
+  if (str.includes('.') || str.includes(','))
+    return { error: 'Please enter a whole integer, not a decimal.' };
+
+  const num = Number(str);
+  if (isNaN(num)) return { error: `"${str}" is not a valid number.` };
+  if (!Number.isInteger(num)) return { error: 'Please enter a whole integer.' };
+  if (Math.abs(num) > Number.MAX_SAFE_INTEGER)
+    return { error: 'Number is too large. Please enter a value within ±9,007,199,254,740,991.' };
+
+  return { value: num };
+}
+
+function isPrime(n) {
+  if (n < 2) return false;
+  if (n === 2 || n === 3) return true;
+  if (n % 2 === 0 || n % 3 === 0) return false;
+  for (let i = 5; i * i <= n; i += 6) {
+    if (n % i === 0 || n % (i + 2) === 0) return false;
+  }
+  return true;
+}
+
+function checkPrime(raw) {
+  const parsed = parseInput(raw);
+  if (parsed.error) return { isPrime: null, number: null, error: parsed.error };
+  const n = parsed.value;
+  return { isPrime: isPrime(n), number: n, error: null };
+}
+
+// ── UI ────────────────────────────────────────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', () => {
-  const form        = document.getElementById('primeForm');
-  const input       = document.getElementById('numberInput');
-  const resultBox   = document.getElementById('result');
-  const checkBtn    = document.getElementById('checkBtn');
-  const apiBaseSpan = document.getElementById('apiBaseUrl');
+  const form      = document.getElementById('primeForm');
+  const input     = document.getElementById('numberInput');
+  const resultBox = document.getElementById('result');
+  const checkBtn  = document.getElementById('checkBtn');
 
-  // Populate API base URL in code block
-  if (apiBaseSpan) {
-    apiBaseSpan.textContent = window.location.origin;
-  }
-
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const raw = input.value.trim();
-    if (!raw) {
-      showError('Please enter a number.');
-      return;
-    }
-    await runCheck(raw);
+    run(input.value);
   });
 
-  // Allow pressing Enter anywhere on the page to resubmit
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      form.dispatchEvent(new Event('submit'));
-    }
-  });
+  input.addEventListener('input', () => input.classList.remove('error'));
 
-  // Clear error styling on new input
-  input.addEventListener('input', () => {
-    input.classList.remove('error');
-  });
+  function run(value) {
+    const { isPrime: prime, number, error } = checkPrime(value);
 
-  async function runCheck(value) {
-    setLoading(true);
-
-    try {
-      const res  = await fetch(`/api/check/${encodeURIComponent(value)}`);
-      const data = await res.json();
-      renderResult(data);
-    } catch {
-      showError('Network error. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function renderResult(data) {
     resultBox.classList.remove('hidden', 'is-prime', 'not-prime', 'is-error');
 
-    if (data.error) {
+    if (error) {
       input.classList.add('error');
       resultBox.classList.add('is-error');
       resultBox.innerHTML = `
         <span class="result-icon">⚠️</span>
-        <div class="result-body">
-          <div class="result-verdict">${escapeHtml(data.error)}</div>
-        </div>`;
+        <div class="result-body"><div class="result-verdict">${esc(error)}</div></div>`;
       return;
     }
 
     input.classList.remove('error');
 
-    if (data.isPrime) {
+    if (prime) {
       resultBox.classList.add('is-prime');
       resultBox.innerHTML = `
         <span class="result-icon">✓</span>
         <div class="result-body">
-          <div class="result-number">${escapeHtml(String(data.number))}</div>
+          <div class="result-number">${esc(String(number))}</div>
           <div class="result-verdict">is a <strong>prime number</strong> 🎉</div>
         </div>`;
     } else {
@@ -76,56 +76,21 @@ document.addEventListener('DOMContentLoaded', () => {
       resultBox.innerHTML = `
         <span class="result-icon">✗</span>
         <div class="result-body">
-          <div class="result-number">${escapeHtml(String(data.number))}</div>
+          <div class="result-number">${esc(String(number))}</div>
           <div class="result-verdict">is <strong>not</strong> a prime number</div>
         </div>`;
     }
   }
 
-  function showError(msg) {
-    input.classList.add('error');
-    resultBox.classList.remove('hidden', 'is-prime', 'not-prime');
-    resultBox.classList.add('is-error');
-    resultBox.innerHTML = `
-      <span class="result-icon">⚠️</span>
-      <div class="result-body">
-        <div class="result-verdict">${escapeHtml(msg)}</div>
-      </div>`;
-  }
-
-  function setLoading(isLoading) {
-    checkBtn.disabled = isLoading;
-    checkBtn.querySelector('.btn-text').textContent = isLoading ? 'Checking…' : 'Check';
-  }
-
-  function escapeHtml(str) {
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+  function esc(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 });
 
-// ── Quick-example shortcut ────────────────────────────────────────────────────
+// ── Quick examples (called from HTML) ─────────────────────────────────────────
 function tryExample(n) {
   const input = document.getElementById('numberInput');
   input.value = String(n);
   input.classList.remove('error');
   document.getElementById('primeForm').dispatchEvent(new Event('submit'));
-}
-
-// ── Copy to clipboard ─────────────────────────────────────────────────────────
-function copyToClipboard(btn, text) {
-  navigator.clipboard.writeText(text).then(() => {
-    btn.textContent = 'Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = 'Copy URL';
-      btn.classList.remove('copied');
-    }, 2000);
-  }).catch(() => {
-    btn.textContent = 'Failed';
-    setTimeout(() => { btn.textContent = 'Copy URL'; }, 1500);
-  });
 }

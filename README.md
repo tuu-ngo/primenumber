@@ -1,221 +1,74 @@
 # Prime Number Checker
 
-A lightweight web application + REST API that checks whether an integer is a prime number.
+A pure client-side web application that checks whether an integer is a prime number.  
+All computation runs in the browser — no backend or server required.
+
+🔗 **Live demo:** `https://<your-github-username>.github.io/primenumber/`
+
+---
 
 ## Features
 
-- **Web UI** — clean, responsive interface for interactive use
-- **REST API** — two endpoints for programmatic access
-- **Input validation** — handles invalid input, decimals, negative numbers gracefully
-- **Unit & integration tests** — Jest + Supertest, 80%+ coverage
-- **Health endpoint** — `/health` for uptime monitoring
+- Instant prime/not-prime result with clear visual feedback
+- Handles edge cases: 0, 1, negative numbers, decimals, non-numeric input
+- Quick-example buttons for common values
+- Fully responsive — works on mobile and desktop
+- Algorithm: trial division up to √n with 6k±1 optimisation — O(√n)
 
 ---
 
-## API Reference
-
-### GET `/api/check/:number`
-
-```
-GET /api/check/17
-```
-
-**Response 200 (prime)**
-```json
-{
-  "isPrime": true,
-  "number": 17,
-  "error": null,
-  "message": "17 is a prime number."
-}
-```
-
-**Response 200 (not prime)**
-```json
-{
-  "isPrime": false,
-  "number": 4,
-  "error": null,
-  "message": "4 is not a prime number."
-}
-```
-
-**Response 400 (invalid input)**
-```json
-{
-  "isPrime": null,
-  "number": null,
-  "error": "Input is not a valid number.",
-  "message": "Input is not a valid number."
-}
-```
-
----
-
-### POST `/api/check`
-
-```
-POST /api/check
-Content-Type: application/json
-
-{ "number": 97 }
-```
-
-Same response shape as GET above.
-
----
-
-### GET `/health`
-
-```json
-{
-  "status": "ok",
-  "timestamp": "2024-01-01T00:00:00.000Z",
-  "uptime": 123.45
-}
-```
-
----
-
-## Local Development
-
-### Prerequisites
-- Node.js >= 18
-
-### Setup
+## Run Locally
 
 ```bash
-npm install
-npm start          # production mode  →  http://localhost:3000
-npm run dev        # dev mode (auto-restart)
-npm test           # run all tests with coverage
+# Option 1 — just open the file
+open public/index.html
+
+# Option 2 — serve with npx
+npx serve public
+# → http://localhost:3000
 ```
 
 ---
 
-## AWS Deployment (EC2 — Amazon Linux 2023)
+## Deploy to GitHub Pages
 
-> Estimated time: ~15 minutes
+### Step 1 — Create GitHub repository
 
-### Step 1 — Launch EC2 Instance
+1. Go to [github.com/new](https://github.com/new)
+2. Name: `primenumber`
+3. Set to **Public**
+4. Click **Create repository**
 
-1. Go to **AWS Console → EC2 → Launch Instance**
-2. Choose **Amazon Linux 2023 AMI** (free tier eligible)
-3. Instance type: **t2.micro** (free tier)
-4. **Key pair**: create or select an existing `.pem` key
-5. **Security Group** — add these inbound rules:
-
-| Type  | Protocol | Port | Source    |
-|-------|----------|------|-----------|
-| SSH   | TCP      | 22   | My IP     |
-| HTTP  | TCP      | 80   | 0.0.0.0/0 |
-| Custom TCP | TCP | 3000 | 0.0.0.0/0 |
-
-6. Click **Launch Instance**
-
----
-
-### Step 2 — Connect to EC2
+### Step 2 — Push code
 
 ```bash
-# Replace <YOUR_KEY.pem> and <EC2_PUBLIC_IP> with your values
-chmod 400 YOUR_KEY.pem
-ssh -i YOUR_KEY.pem ec2-user@<EC2_PUBLIC_IP>
+git remote add origin https://github.com/<YOUR_USERNAME>/primenumber.git
+git branch -M main
+git push -u origin main
 ```
 
----
+### Step 3 — Enable GitHub Pages
 
-### Step 3 — Install Node.js & PM2
+1. Open your repo on GitHub
+2. Go to **Settings → Pages**
+3. Source: **Deploy from a branch**
+4. Branch: `main` / folder: `/ (root)`  
+   *(GitHub Pages will serve from root; we need to point it at `/public`)*
+
+> **Note:** Since our HTML lives in `/public`, use the steps below instead:
+
+### Step 3 (alternative) — Use `gh-pages` branch
 
 ```bash
-# Update system packages
-sudo dnf update -y
-
-# Install Node.js 20
-curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
-sudo dnf install -y nodejs
-
-# Verify
-node -v    # should print v20.x.x
-npm -v
-
-# Install PM2 (process manager — keeps app running after logout)
-sudo npm install -g pm2
+# Push only the public/ folder as the root of gh-pages branch
+git subtree push --prefix public origin gh-pages
 ```
 
----
+Then in **Settings → Pages**, set branch to `gh-pages` / `/ (root)`.
 
-### Step 4 — Upload Project
-
-**Option A: via Git (recommended)**
-```bash
-sudo dnf install -y git
-git clone https://github.com/YOUR_USERNAME/primenumber.git
-cd primenumber
+Your site will be live at:
 ```
-
-**Option B: via SCP from your local machine**
-```bash
-# Run on your LOCAL machine (not EC2)
-scp -i YOUR_KEY.pem -r ./primenumber ec2-user@<EC2_PUBLIC_IP>:~/primenumber
-```
-
----
-
-### Step 5 — Install Dependencies & Start
-
-```bash
-cd ~/primenumber
-npm install --omit=dev
-
-# Start with PM2
-pm2 start src/app.js --name prime-checker
-
-# Auto-restart on server reboot
-pm2 startup
-pm2 save
-```
-
-The app runs on port **3000**.  
-Access it at: `http://<EC2_PUBLIC_IP>:3000`
-
----
-
-### Step 6 — (Optional) Run on Port 80 via iptables
-
-```bash
-# Forward port 80 → 3000 (no need for root to run Node)
-sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 3000
-```
-
-Access at: `http://<EC2_PUBLIC_IP>` (no port needed)
-
----
-
-### Useful PM2 Commands
-
-```bash
-pm2 status          # check running processes
-pm2 logs            # view live logs
-pm2 restart prime-checker
-pm2 stop prime-checker
-```
-
----
-
-## Quick API Test (curl)
-
-```bash
-# GET endpoint
-curl http://<EC2_PUBLIC_IP>:3000/api/check/17
-
-# POST endpoint
-curl -X POST http://<EC2_PUBLIC_IP>:3000/api/check \
-  -H "Content-Type: application/json" \
-  -d '{"number": 97}'
-
-# Health check
-curl http://<EC2_PUBLIC_IP>:3000/health
+https://<YOUR_USERNAME>.github.io/primenumber/
 ```
 
 ---
@@ -225,16 +78,9 @@ curl http://<EC2_PUBLIC_IP>:3000/health
 ```
 primenumber/
 ├── public/
-│   ├── index.html       # Web UI
-│   ├── style.css        # Styles
-│   └── script.js        # Frontend logic
-├── src/
-│   ├── app.js           # Express server + routes
-│   └── primeChecker.js  # Prime algorithm + validation
-├── tests/
-│   ├── primeChecker.test.js  # Unit tests
-│   └── api.test.js           # API integration tests
-├── jest.config.js
+│   ├── index.html   ← entry point
+│   ├── style.css    ← dark-mode responsive styles
+│   └── script.js    ← prime algorithm + UI logic
 ├── package.json
 └── README.md
 ```
@@ -243,8 +89,16 @@ primenumber/
 
 ## Algorithm
 
-Uses **trial division up to √n** with 6k±1 optimization:
+```js
+function isPrime(n) {
+  if (n < 2) return false;
+  if (n === 2 || n === 3) return true;
+  if (n % 2 === 0 || n % 3 === 0) return false;
+  for (let i = 5; i * i <= n; i += 6) {
+    if (n % i === 0 || n % (i + 2) === 0) return false;
+  }
+  return true;
+}
+```
 
-- Time complexity: `O(√n)`
-- Handles: all safe integers (`Number.MAX_SAFE_INTEGER`)
-- Correctly handles: `0`, `1`, `2`, negatives, decimals (rejected), strings (rejected)
+Time complexity: **O(√n)** — fast for all safe integers up to 9,007,199,254,740,991.
