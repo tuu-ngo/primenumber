@@ -14,14 +14,13 @@
 
   <main class="container">
     <header class="header">
-      <div class="logo">
-        <span class="logo-icon">∞</span>
-      </div>
+      <div class="logo">∞</div>
       <h1 class="title">Prime Number Checker</h1>
       <p class="subtitle">Enter any integer to find out if it's a prime number</p>
     </header>
 
-    <section class="card" aria-label="Prime number input">
+    <!-- Input card -->
+    <section class="card">
       <form id="primeForm" autocomplete="off" novalidate>
         <div class="input-group">
           <label for="numberInput" class="input-label">Enter an integer</label>
@@ -33,72 +32,29 @@
               class="number-input"
               placeholder="e.g. 17, 97, 1000003"
               inputmode="numeric"
-              aria-describedby="inputHint"
               autocomplete="off"
             />
-            <button type="submit" class="check-btn" id="checkBtn" aria-label="Check prime">
+            <button type="submit" class="check-btn" id="checkBtn">
               <span class="btn-text">Check</span>
               <span class="btn-icon">→</span>
             </button>
           </div>
-          <p class="input-hint" id="inputHint">Accepts positive and negative integers</p>
+          <p class="input-hint">Accepts positive and negative integers</p>
         </div>
       </form>
 
       <div id="result" class="result hidden" role="alert" aria-live="polite"></div>
     </section>
 
-    <section class="api-section card">
-      <h2 class="api-title">API Reference</h2>
-      <p class="api-desc">Use the REST API to integrate prime checking into your application.</p>
-
-      <div class="api-endpoint">
-        <div class="endpoint-header">
-          <span class="method get">GET</span>
-          <code class="endpoint-path">/api/check/<span class="param">{number}</span></code>
-        </div>
-        <button class="copy-btn" onclick="copyToClipboard(this, window.location.origin + '/api/check/17')" aria-label="Copy URL">Copy URL</button>
-      </div>
-
-      <div class="api-endpoint">
-        <div class="endpoint-header">
-          <span class="method post">POST</span>
-          <code class="endpoint-path">/api/check</code>
-        </div>
-        <div class="code-block">
-          <pre><code>curl -X POST \
-  <span id="apiBaseUrl"></span>/api/check \
-  -H "Content-Type: application/json" \
-  -d '{"number": 17}'</code></pre>
-        </div>
-      </div>
-
-      <div class="api-response-example">
-        <h3 class="example-title">Example Response</h3>
-        <div class="code-block">
-          <pre><code>{
-  "isPrime": true,
-  "number": 17,
-  "error": null,
-  "message": "17 is a prime number."
-}</code></pre>
-        </div>
-      </div>
-
-      <div class="health-row">
-        <span class="health-label">Health endpoint:</span>
-        <a href="/health" target="_blank" class="health-link"><code>/health</code></a>
-      </div>
-    </section>
-
-    <section class="examples-section card">
-      <h2 class="api-title">Quick Examples</h2>
+    <!-- Quick examples -->
+    <section class="card">
+      <h2 class="section-title">Quick Examples</h2>
       <div class="examples-grid">
-        <button class="example-chip prime" onclick="tryExample(2)">2</button>
-        <button class="example-chip prime" onclick="tryExample(3)">3</button>
-        <button class="example-chip prime" onclick="tryExample(17)">17</button>
-        <button class="example-chip prime" onclick="tryExample(97)">97</button>
-        <button class="example-chip prime" onclick="tryExample(1000003)">1,000,003</button>
+        <button class="example-chip prime"     onclick="tryExample(2)">2</button>
+        <button class="example-chip prime"     onclick="tryExample(3)">3</button>
+        <button class="example-chip prime"     onclick="tryExample(17)">17</button>
+        <button class="example-chip prime"     onclick="tryExample(97)">97</button>
+        <button class="example-chip prime"     onclick="tryExample(1000003)">1,000,003</button>
         <button class="example-chip not-prime" onclick="tryExample(1)">1</button>
         <button class="example-chip not-prime" onclick="tryExample(4)">4</button>
         <button class="example-chip not-prime" onclick="tryExample(100)">100</button>
@@ -110,10 +66,21 @@
         <span class="legend-dot not-prime"></span><span>Not prime</span>
       </div>
     </section>
+
+    <!-- How it works -->
+    <section class="card">
+      <h2 class="section-title">How it works</h2>
+      <ul class="info-list">
+        <li>A <strong>prime number</strong> is a natural number greater than 1 that has no positive divisors other than 1 and itself.</li>
+        <li>Uses <strong>trial division up to √n</strong> with 6k±1 optimisation — efficient for all safe integers.</li>
+        <li>Handles edge cases: 0, 1, negative numbers, decimals, and non-numeric input.</li>
+        <li>All computation runs <strong>entirely in your browser</strong> — no server required.</li>
+      </ul>
+    </section>
   </main>
 
   <footer class="footer">
-    <p>Prime Number Checker &mdash; REST API + Web UI</p>
+    <p>Prime Number Checker &mdash; pure client-side JavaScript</p>
   </footer>
 
   <script src="script.js"></script>
