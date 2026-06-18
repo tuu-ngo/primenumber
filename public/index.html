@@ -4,84 +4,68 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Prime Number Checker</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="bg-grid"></div>
+
+  <div class="student-badge">
+    <span class="student-name">Ngo Huu Tai</span>
+    <span class="student-id">ID: 29210252499</span>
+  </div>
 
   <main class="container">
     <header class="header">
-      <div class="logo">∞</div>
-      <h1 class="title">Prime Number Checker</h1>
-      <p class="subtitle">Enter any integer to find out if it's a prime number</p>
+      <h1>Prime Number Checker</h1>
+      <p class="subtitle">Check whether an integer is a prime number</p>
     </header>
 
-    <!-- Input card -->
     <section class="card">
       <form id="primeForm" autocomplete="off" novalidate>
-        <div class="input-group">
-          <label for="numberInput" class="input-label">Enter an integer</label>
-          <div class="input-wrapper">
-            <input
-              type="text"
-              id="numberInput"
-              name="number"
-              class="number-input"
-              placeholder="e.g. 17, 97, 1000003"
-              inputmode="numeric"
-              autocomplete="off"
-            />
-            <button type="submit" class="check-btn" id="checkBtn">
-              <span class="btn-text">Check</span>
-              <span class="btn-icon">→</span>
-            </button>
-          </div>
-          <p class="input-hint">Accepts positive and negative integers</p>
+        <label for="numberInput">Enter an integer</label>
+        <div class="input-row">
+          <input
+            type="text"
+            id="numberInput"
+            name="number"
+            placeholder="e.g. 17, 97, 1000003"
+            inputmode="numeric"
+            autocomplete="off"
+          />
+          <button type="submit">Check</button>
         </div>
+        <p class="hint">Accepts positive and negative integers</p>
       </form>
 
       <div id="result" class="result hidden" role="alert" aria-live="polite"></div>
     </section>
 
-    <!-- Quick examples -->
     <section class="card">
-      <h2 class="section-title">Quick Examples</h2>
+      <h2>Quick Examples</h2>
       <div class="examples-grid">
-        <button class="example-chip prime"     onclick="tryExample(2)">2</button>
-        <button class="example-chip prime"     onclick="tryExample(3)">3</button>
-        <button class="example-chip prime"     onclick="tryExample(17)">17</button>
-        <button class="example-chip prime"     onclick="tryExample(97)">97</button>
-        <button class="example-chip prime"     onclick="tryExample(1000003)">1,000,003</button>
-        <button class="example-chip not-prime" onclick="tryExample(1)">1</button>
-        <button class="example-chip not-prime" onclick="tryExample(4)">4</button>
-        <button class="example-chip not-prime" onclick="tryExample(100)">100</button>
-        <button class="example-chip not-prime" onclick="tryExample(-7)">−7</button>
-        <button class="example-chip not-prime" onclick="tryExample(0)">0</button>
+        <button class="chip prime"     onclick="tryExample(2)">2</button>
+        <button class="chip prime"     onclick="tryExample(3)">3</button>
+        <button class="chip prime"     onclick="tryExample(17)">17</button>
+        <button class="chip prime"     onclick="tryExample(97)">97</button>
+        <button class="chip prime"     onclick="tryExample(1000003)">1,000,003</button>
+        <button class="chip not-prime" onclick="tryExample(0)">0</button>
+        <button class="chip not-prime" onclick="tryExample(1)">1</button>
+        <button class="chip not-prime" onclick="tryExample(4)">4</button>
+        <button class="chip not-prime" onclick="tryExample(100)">100</button>
+        <button class="chip not-prime" onclick="tryExample(-7)">−7</button>
       </div>
-      <div class="examples-legend">
-        <span class="legend-dot prime"></span><span>Prime</span>
-        <span class="legend-dot not-prime"></span><span>Not prime</span>
-      </div>
+      <p class="legend">
+        <span class="dot prime"></span> Prime &nbsp;
+        <span class="dot not-prime"></span> Not prime
+      </p>
     </section>
 
-    <!-- How it works -->
-    <section class="card">
-      <h2 class="section-title">How it works</h2>
-      <ul class="info-list">
-        <li>A <strong>prime number</strong> is a natural number greater than 1 that has no positive divisors other than 1 and itself.</li>
-        <li>Uses <strong>trial division up to √n</strong> with 6k±1 optimisation — efficient for all safe integers.</li>
-        <li>Handles edge cases: 0, 1, negative numbers, decimals, and non-numeric input.</li>
-        <li>All computation runs <strong>entirely in your browser</strong> — no server required.</li>
-      </ul>
+    <section class="card info-card">
+      <h2>About Prime Numbers</h2>
+      <p>A <strong>prime number</strong> is a natural number greater than 1 that is divisible only by 1 and itself.</p>
+      <p>Examples: 2, 3, 5, 7, 11, 13 ...</p>
+      <p>This checker uses <strong>trial division up to √n</strong>, which works correctly for all integers up to 9,007,199,254,740,991.</p>
     </section>
   </main>
-
-  <footer class="footer">
-    <p>Prime Number Checker &mdash; pure client-side JavaScript</p>
-  </footer>
 
   <script src="script.js"></script>
 </body>

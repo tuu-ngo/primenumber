@@ -55,9 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (error) {
       input.classList.add('error');
       resultBox.classList.add('is-error');
-      resultBox.innerHTML = `
-        <span class="result-icon">⚠️</span>
-        <div class="result-body"><div class="result-verdict">${esc(error)}</div></div>`;
+      resultBox.innerHTML = `<div class="result-verdict">${esc(error)}</div>`;
       return;
     }
 
@@ -66,19 +64,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (prime) {
       resultBox.classList.add('is-prime');
       resultBox.innerHTML = `
-        <span class="result-icon">✓</span>
-        <div class="result-body">
-          <div class="result-number">${esc(String(number))}</div>
-          <div class="result-verdict">is a <strong>prime number</strong> 🎉</div>
-        </div>`;
+        <div class="result-number">${esc(String(number))}</div>
+        <div class="result-verdict">is a <strong>prime number</strong>.</div>`;
     } else {
       resultBox.classList.add('not-prime');
       resultBox.innerHTML = `
-        <span class="result-icon">✗</span>
-        <div class="result-body">
-          <div class="result-number">${esc(String(number))}</div>
-          <div class="result-verdict">is <strong>not</strong> a prime number</div>
-        </div>`;
+        <div class="result-number">${esc(String(number))}</div>
+        <div class="result-verdict">is <strong>not</strong> a prime number.</div>`;
     }
   }
 
