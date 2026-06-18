@@ -72,6 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="result-number">${esc(String(number))}</div>
         <div class="result-verdict">is <strong>not</strong> a prime number.</div>`;
     }
+
+    input.value = '';
+    input.focus();
   }
 
   function esc(str) {
